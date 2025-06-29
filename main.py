@@ -15,7 +15,6 @@ load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 app = FastAPI()
-app.mount("/", StaticFiles(directory="dist", html=True), name="static")
 
 
 # ✅ CORS fix: allow specific origin (React Vite frontend)
@@ -220,6 +219,7 @@ async def calc_ofdm(inp: OFDMInput):
 
     explanation = call_openai("OFDM", inp.dict(), numbers)
     return {"numbers": numbers, "explanation": explanation}
+app.mount("/", StaticFiles(directory="dist", html=True), name="static")
 
 if __name__ == "__main__":
     import uvicorn
