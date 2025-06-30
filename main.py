@@ -100,30 +100,38 @@ async def calc_link_budget(inp: LinkBudgetInput):
 async def calc_cellular(inp: CellularInput):
     cell_area = 2.6 * inp.cellRadius ** 2
     total_cells = math.ceil(inp.totalArea / cell_area)
-    channels_per_cell = inp.totalChannels // inp.clusterSize
     total_clusters = math.ceil(total_cells / inp.clusterSize)
-    total_subs = total_cells * inp.subsPerCell
-    subs_per_channel = round(inp.subsPerCell / channels_per_cell, 2) if inp.subsPerCell else None
+
+    channels_per_cell = inp.totalChannels // inp.clusterSize if inp.clusterSize > 0 else 0
+    if channels_per_cell == 0:
+        return {"error": "Channels per cell is zero! Total channels must be at least equal to cluster size."}
+
+    subs_per_channel = (
+        round(inp.subsPerCell / channels_per_cell, 2)
+        if inp.subsPerCell and inp.subsPerCell > 0 and channels_per_cell > 0
+        else None
+    )
+    total_subs = total_cells * inp.subsPerCell if inp.subsPerCell else 0
     reuse_distance = inp.cellRadius * math.sqrt(3 * inp.clusterSize)
     freq_reuse_factor = 1 / inp.clusterSize
-    cochannel_ratio   = math.sqrt(3 * inp.clusterSize)
-    channels_cluster  = channels_per_cell * inp.clusterSize
-    system_capacity   = total_clusters * inp.totalChannels
-    i_j_move          = ij_for_cluster(inp.clusterSize)
+    cochannel_ratio = math.sqrt(3 * inp.clusterSize)
+    channels_cluster = channels_per_cell * inp.clusterSize
+    system_capacity = total_clusters * inp.totalChannels
+    i_j_move = ij_for_cluster(inp.clusterSize)
 
     numbers = {
-        "Cell Area (km²)":          round(cell_area, 2),
-        "Total Cells":              total_cells,
-        "Channels per Cell":        channels_per_cell,
-        "Total Clusters":           total_clusters,
-        "Reuse Distance (km)":      round(reuse_distance, 2),
-        "Total Subscribers":        total_subs,
-        "Subscribers per Channel":  subs_per_channel,
-        "Frequency Reuse Factor":   round(freq_reuse_factor, 3),
+        "Cell Area (km²)": round(cell_area, 2),
+        "Total Cells": total_cells,
+        "Channels per Cell": channels_per_cell,
+        "Total Clusters": total_clusters,
+        "Reuse Distance (km)": round(reuse_distance, 2),
+        "Total Subscribers": total_subs,
+        "Subscribers per Channel": subs_per_channel,
+        "Frequency Reuse Factor": round(freq_reuse_factor, 3),
         "Co-channel Reuse Ratio Q": round(cochannel_ratio, 2),
-        "Channels per Cluster":     channels_cluster,
+        "Channels per Cluster": channels_cluster,
         "System Capacity (channels)": system_capacity,
-        "(i,j) Move":               i_j_move,
+        "(i,j) Move": i_j_move,
     }
     prompt = (
         "You are a cellular networks assistant. Give a full, clear step-by-step explanation of how every output was computed from the user's inputs in this cellular system design.\n"
