@@ -88,10 +88,10 @@ async def calc_link_budget(inp: LinkBudgetInput):
     }
     prompt = (
         "You are a wireless communication assistant. Explain step-by-step how all outputs in this link budget were calculated from the user’s inputs.\n"
-        "For each output, write the formula in plain text (not LaTeX), and substitute the actual numbers in the calculation.\n"
-        "After every formula, explain what it means, and what each value represents.\n"
-        "Use clear, friendly language, and cover: EIRP, Free-Space Path Loss, Received Power, and any extra gains/losses used.\n"
-        "The answer must be detailed and complete, not brief."
+        "For each output, write the formula in **plain text only** (not LaTeX, not math markup, not code blocks, just like: EIRP = Tx Power + Tx Gain - Tx Cable Loss)."
+        " Substitute the numbers into the formula, show the calculation and the result."
+        " After each calculation, briefly explain what the output means and what each value represents."
+        " Do not use LaTeX, symbols like $, \\(, \\[, or code formatting. Make the answer simple and beginner-friendly, not brief."
     )
     explanation = call_openai(prompt, inp.dict(), numbers)
     return {"numbers": numbers, "explanation": explanation}
@@ -135,10 +135,9 @@ async def calc_cellular(inp: CellularInput):
     }
     prompt = (
         "You are a cellular networks assistant. Give a full, clear step-by-step explanation of how every output was computed from the user's inputs in this cellular system design.\n"
-        "For each output, write the formula in plain text (not LaTeX), substitute the numbers, and explain each step.\n"
-        "Explain what each parameter means (cell area, clusters, channels per cell, reuse distance, etc).\n"
-        "After all formulas, add a short summary of what the results mean for a real cellular network.\n"
-        "The explanation must be detailed and easy to understand for a beginner."
+        "For each output, write the formula in **plain text only** (not LaTeX, not code, not math markup). Use formulas like: Cell Area = 2.6 * (Cell Radius)^2, and substitute the user's numbers."
+        " After each calculation, explain what it means for a real cellular network."
+        " Avoid using any LaTeX, code formatting, or symbols like $ or \\( or \\[. Keep everything readable and beginner-friendly."
     )
     explanation = call_openai(prompt, inp.dict(), numbers)
     return {"numbers": numbers, "explanation": explanation}
@@ -160,10 +159,12 @@ async def calc_wcs(inp: WCSInput):
         "Burst Formatted Rate Rb (bps)": Rb,
     }
     prompt = (
-        "You are a digital communications assistant. Give a detailed, step-by-step explanation for each output in this wireless communication system chain.\n"
-        "For each step (sampling, quantization, source encoding, channel encoding, interleaving, burst formatting), write the formula in plain text, substitute the real numbers, and explain what each number means.\n"
-        "Include what the block does and why this step is important.\n"
-        "Make your explanation clear and beginner-friendly."
+        "You are a digital communications assistant. For each block in the wireless communication chain, do the following:\n"
+        "- State the purpose of the block in one short sentence.\n"
+        "- Write the calculation formula in **plain text only** (not LaTeX, not math markup, not code blocks, just normal text like 'fs = 2 * bandwidth').\n"
+        "- Substitute the numbers directly into the formula, and show the calculation result.\n"
+        "- After each result, explain what it means in simple words.\n"
+        "Make sure NOT to use any special formatting, LaTeX, code blocks, or math markup. Only plain, readable text for beginners."
     )
     explanation = call_openai(prompt, inp.dict(), numbers)
     return {"numbers": numbers, "explanation": explanation}
@@ -185,11 +186,11 @@ async def calc_ofdm(inp: OFDMInput):
         "Spectral Efficiency (bps/Hz)": spectral_eff,
     }
     prompt = (
-        "You are an OFDM systems assistant. For each calculated output, give a detailed explanation:\n"
-        "- Write the formula in plain text (not LaTeX).\n"
-        "- Substitute the user's actual numbers.\n"
-        "- Explain what each output means for a real OFDM system (bits per RE, symbol rate, RB rate, throughput, spectral efficiency, etc).\n"
-        "- Use beginner-friendly, clear language, covering each calculation step."
+        "You are an OFDM systems assistant. For each output, do the following:\n"
+        "- Write the formula in **plain text only** (not LaTeX, not code, not math markup), e.g., 'Symbol Rate = RE Rate * Number of Subcarriers'."
+        "- Substitute the user's numbers into the formula, and show the calculation result."
+        "- After each calculation, explain what it means for an OFDM system in simple, readable sentences."
+        "- Avoid any LaTeX, code blocks, or special formatting. The answer must be beginner-friendly."
     )
     explanation = call_openai(prompt, inp.dict(), numbers)
     return {"numbers": numbers, "explanation": explanation}
