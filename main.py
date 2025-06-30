@@ -148,7 +148,7 @@ async def calc_wcs(inp: WCSInput):
     fs = 2 * inp.bandwidth
     Rq = fs * inp.quantizer_bits
     Rs = Rq * inp.source_code_rate
-    Rc = Rs * inp.channel_code_rate
+    Rc = Rs / inp.channel_code_rate
     Ri = Rc
     Rb = Ri * (1 + inp.burst_overhead / 100)
     numbers = {
